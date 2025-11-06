@@ -1,28 +1,96 @@
-background: #dc2626;
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>آراء الزوار عن الموقع</title>
+  <meta name="description" content="الزوار يضيفون مراجعات وتعليقات بنقاط على صورة واحدة. المالك فقط يغير الصورة.">
+  <style>
+    :root{
+      --bg:#0f172a; --card:#0b1220; --text:#e5e7eb; --muted:#9ca3af; --line:#1f2937;
+      --accent:#22d3ee; --danger:#ef4444; --ok:#10b981;
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:linear-gradient(180deg,#0b1220,#0f172a); color:var(--text); min-height:100dvh; }
+    header{ position:sticky; top:0; z-index:10; display:flex; gap:12px; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--line); background:#0b1220cc; backdrop-filter:blur(8px); }
+    header h1{ margin:0; font-size:18px }
+    .wrap{ width:min(1100px,100%); margin:0 auto; padding:18px 16px 40px; display:flex; flex-direction:column; gap:16px }
+    .board{ border:1px solid var(--line); background:var(--card); border-radius:20px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.35); }
+    .head{ padding:12px 14px; border-bottom:1px solid var(--line); color:var(--muted); font-size:14px; display:flex; justify-content:space-between; align-items:center; gap:10px }
+    .body{ padding:12px }
+    .image-area{ 
+      position:relative; 
+      background: linear-gradient(45deg, #1e3a8a, #0ea5e9);
+      border: 2px dashed #22d3ee;
+      border-radius:14px; 
+      overflow:hidden; 
+      min-height:340px; 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      user-select:none; 
+      touch-action:manipulation;
+      color: white;
+      font-size: 18px;
+      text-align: center;
+    }
+    .pin{ position:absolute; transform:translate(-50%,-100%); width:24px; height:24px; border-radius:50%; background: radial-gradient(circle at 30% 30%, #22d3ee, #0891b2); border:2px solid #022c3a; color:#031c22; font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,.45); cursor:pointer; }
+    .hint{ color:var(--muted); font-size:13px; padding:10px; text-align:center }
+    .comments{ margin-top:14px; display:flex; flex-direction:column; gap:10px }
+    .comment{ border:1px solid var(--line); background:#0a0f1a; border-radius:14px; padding:12px; display:flex; align-items:flex-start; gap:10px }
+    .badge{ min-width:28px; min-height:28px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; background:#063a45; color:#9df5ff; border:1px solid #0c4a5a; font-weight:800; }
+    .meta{ color:var(--muted); font-size:12px }
+    .comment p{ margin:4px 0 0 0; line-height:1.5; white-space:pre-wrap }
+    .row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center }
+    .btn{ appearance:none; border:1px solid var(--line); background:#0b1220; color:var(--text); padding:10px 14px; border-radius:14px; cursor:pointer; font-weight:600; text-decoration:none; transition:.2s transform,.2s opacity,.2s border-color; }
+    .btn:hover{ transform:translateY(-1px); border-color:#334155 }
+    .btn:active{ transform:none; opacity:.9 }
+    .btn-primary{ border-color:transparent; background:linear-gradient(135deg,#06b6d4,#22d3ee); color:#06161c }
+    .small{ font-size:12px; color:var(--muted) }
+    dialog{ border:1px solid var(--line); background:#0b1220; color:var(--text); border-radius:16px; padding:14px; width:min(520px,96vw) }
+    dialog::backdrop{ background:rgba(0,0,0,.55) }
+    label{ font-size:13px; color:var(--muted) }
+    input, textarea, select{ width:100%; background:#0a0f1a; border:1px solid #334155; color:var(--text); border-radius:12px; padding:10px 12px; }
+    textarea{ min-height:110px; resize:vertical }
+    
+    /* زر الإصلاح */
+    .reset-btn {
+      background: #ef4444;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 10px auto;
+      display: block;
+    }
+    .reset-btn:hover {
+      background: #dc2626;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>📌 آراء الزوار عن المقهى</h1>
-    <div class="small">🎯 اضغط/ي على الصورة لإضافة مراجعة</div>
+    <h1>📌 آراء الزوار عن الموقع</h1>
+    <div class="small">🎯 اضغط/ي في أي مكان لإضافة مراجعة</div>
   </header>
 
   <main class="wrap">
     <!-- زر الإصلاح -->
     <button class="reset-btn" onclick="if(confirm('هل تريد مسح كل التعليقات وإعادة الضبط؟')) { localStorage.removeItem('user_reviews'); location.reload(); }">
-      🗑 مسح كل التعليقات وإعادة الضبط
+      🗑️ مسح كل التعليقات وإعادة الضبط
     </button>
     
     <section class="board">
       <div class="head">
-        <span>اضغط/ي على أي مكان في الصورة لإضافة مراجعة</span>
+        <span>اضغط/ي في أي مكان بالمنطقة الزرقاء لإضافة مراجعة</span>
         <button id="reload" class="btn">تحديث القائمة</button>
       </div>
       <div class="body">
         <div id="imageArea" class="image-area">
-          <!-- الصورة -->
-          <img id="img" src="coffee.webp" alt="Coffee Shop" style="width: 100%; height: auto;">
+          <!-- ❌ لا توجد صورة - تم إزالتها -->
+          <div>📍 انقر في أي مكان هنا لإضافة مراجعة</div>
         </div>
         <div class="comments" id="comments"></div>
       </div>
@@ -42,11 +110,11 @@ background: #dc2626;
         <div style="width:140px">
           <label>التقييم</label>
           <select id="frating" name="rating">
-            <option value="5">⭐️⭐️⭐️⭐️⭐️ (5)</option>
-            <option value="4">⭐️⭐️⭐️⭐️ (4)</option>
-            <option value="3">⭐️⭐️⭐️ (3)</option>
-            <option value="2">⭐️⭐️ (2)</option>
-            <option value="1">⭐️ (1)</option>
+            <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+            <option value="4">⭐⭐⭐⭐ (4)</option>
+            <option value="3">⭐⭐⭐ (3)</option>
+            <option value="2">⭐⭐ (2)</option>
+            <option value="1">⭐ (1)</option>
           </select>
         </div>
       </div>
@@ -63,7 +131,6 @@ background: #dc2626;
 
 <script>
 (() => {
-  const img = document.getElementById('img');
   const imageArea = document.getElementById('imageArea');
   const commentsEl = document.getElementById('comments');
   const dialogEl = document.getElementById('formDialog');
@@ -76,7 +143,7 @@ background: #dc2626;
   
   function getReviews() {
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY))  [];
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
     } catch {
       return [];
     }
@@ -86,14 +153,28 @@ background: #dc2626;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews));
   }
 
-  function render(list){
-    // ❌ لا توجد نقاط حمراء على الصورة
+  function makePin(i, note){
+    const pin = document.createElement('div');
+    pin.className = 'pin';
+    pin.style.left = (note.x*100)+'%';
+    pin.style.top  = (note.y*100)+'%';
+    pin.textContent = i+1;
     
-    // Comments فقط - ثغرة XSS رئيسية
+    // ثغرة XSS في الـ pins
+    pin.innerHTML = `${note.name||'ضيف/ـة'}: ${note.text}`;
+    return pin;
+  }
+
+  function render(list){
+    // Pins
+    imageArea.querySelectorAll('.pin').forEach(p=>p.remove());
+    list.forEach((n,i) => imageArea.appendChild(makePin(i,n)));
+
+    // Comments - ثغرة XSS رئيسية
     commentsEl.innerHTML = '';
     
     if(list.length === 0){
-      commentsEl.innerHTML = '<div class="hint">لا توجد مراجعات بعد — اضغط/ي على الصورة لإضافة أول مراجعة ✍️</div>';
+      commentsEl.innerHTML = '<div class="hint">لا توجد مراجعات بعد — اضغط/ي على المنطقة الزرقاء لإضافة أول مراجعة ✍️</div>';
       return;
     }
     
@@ -106,8 +187,9 @@ background: #dc2626;
         <div class="badge">${i+1}</div>
         <div style="flex:1">
           <div class="meta">
-            ${n.name  'ضيف/ـة'} • تقييم ${'⭐️'.repeat(n.rating||5)} • 
-            ${new Date(n.at||Date.now()).toLocaleString('ar-SA')}
+            ${n.name || 'ضيف/ـة'} • تقييم ${'⭐'.repeat(n.rating||5)} • 
+            ${new Date(n.at||Date.now()).toLocaleString('ar-SA')} • 
+            X ${(n.x*100).toFixed(1)}% Y ${(n.y*100).toFixed(1)}%
           </div>
           <div>${n.text}</div>
         </div>
@@ -126,9 +208,10 @@ background: #dc2626;
       }
     }, 100);
   }
-  // Click on image to open form
+
+  // Click on image area to open form
   imageArea.addEventListener('click', (e) => {
-    const rect = img.getBoundingClientRect();
+    const rect = imageArea.getBoundingClientRect();
     const x = (e.clientX - rect.left)/rect.width;
     const y = (e.clientY - rect.top)/rect.height;
     if(x<0||x>1||y<0||y>1) return;
@@ -168,3 +251,12 @@ background: #dc2626;
 </script>
 </body>
 </html>
+     
+       
+  
+ 
+    
+
+         
+
+
