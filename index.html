@@ -18,8 +18,22 @@
     .board{ border:1px solid var(--line); background:var(--card); border-radius:20px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.35); }
     .head{ padding:12px 14px; border-bottom:1px solid var(--line); color:var(--muted); font-size:14px; display:flex; justify-content:space-between; align-items:center; gap:10px }
     .body{ padding:12px }
-    .image-area{ position:relative; background:#0a0f1a; border:1px dashed #334155; border-radius:14px; overflow:hidden; min-height:340px; display:flex; align-items:center; justify-content:center; user-select:none; touch-action:manipulation; }
-    .image-area img{ max-width:100%; max-height:70vh; object-fit:contain; display:block }
+    .image-area{ 
+      position:relative; 
+      background: linear-gradient(45deg, #1e3a8a, #0ea5e9);
+      border: 2px dashed #22d3ee;
+      border-radius:14px; 
+      overflow:hidden; 
+      min-height:340px; 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      user-select:none; 
+      touch-action:manipulation;
+      color: white;
+      font-size: 18px;
+      text-align: center;
+    }
     .pin{ position:absolute; transform:translate(-50%,-100%); width:24px; height:24px; border-radius:50%; background: radial-gradient(circle at 30% 30%, #22d3ee, #0891b2); border:2px solid #022c3a; color:#031c22; font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,.45); cursor:pointer; }
     .hint{ color:var(--muted); font-size:13px; padding:10px; text-align:center }
     .comments{ margin-top:14px; display:flex; flex-direction:column; gap:10px }
@@ -38,24 +52,45 @@
     label{ font-size:13px; color:var(--muted) }
     input, textarea, select{ width:100%; background:#0a0f1a; border:1px solid #334155; color:var(--text); border-radius:12px; padding:10px 12px; }
     textarea{ min-height:110px; resize:vertical }
+    
+    /* زر الإصلاح */
+    .reset-btn {
+      background: #ef4444;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 10px auto;
+      display: block;
+    }
+    .reset-btn:hover {
+      background: #dc2626;
+    }
   </style>
 </head>
 <body>
   <header>
     <h1>📌 آراء الزوار عن الموقع</h1>
-    <div class="small">🎯 المالك فقط يغيّر الصورة. الزوار يضيفون مراجعات بنقاط.</div>
+    <div class="small">🎯 اضغط/ي في أي مكان لإضافة مراجعة</div>
   </header>
 
   <main class="wrap">
+    <!-- زر الإصلاح -->
+    <button class="reset-btn" onclick="if(confirm('هل تريد مسح كل التعليقات وإعادة الضبط؟')) { localStorage.removeItem('user_reviews'); location.reload(); }">
+      🗑️ مسح كل التعليقات وإعادة الضبط
+    </button>
+    
     <section class="board">
       <div class="head">
-        <span>اضغط/ي على موقع في الصورة لإضافة مراجعة</span>
+        <span>اضغط/ي في أي مكان بالمنطقة الزرقاء لإضافة مراجعة</span>
         <button id="reload" class="btn">تحديث القائمة</button>
       </div>
       <div class="body">
         <div id="imageArea" class="image-area">
-          <!-- الصورة المملوكة: داخل المشروع -->
-          <img id="img" src="./coffee.webp" alt="صورة العرض">
+          <!-- ❌ لا توجد صورة - تم إزالتها -->
+          <div>📍 انقر في أي مكان هنا لإضافة مراجعة</div>
         </div>
         <div class="comments" id="comments"></div>
       </div>
@@ -96,7 +131,6 @@
 
 <script>
 (() => {
-  const img = document.getElementById('img');
   const imageArea = document.getElementById('imageArea');
   const commentsEl = document.getElementById('comments');
   const dialogEl = document.getElementById('formDialog');
@@ -104,8 +138,8 @@
   const fx = document.getElementById('fx'); const fy = document.getElementById('fy');
   const reloadBtn = document.getElementById('reload');
 
-  // 🔴 التغيير 1: استخدام localStorage بدل Netlify Functions
-  const STORAGE_KEY = 'vulnerable_reviews';
+  // تخزين محلي - كل مستخدم يرى تعليقاته فقط
+  const STORAGE_KEY = 'user_reviews';
   
   function getReviews() {
     try {
@@ -126,7 +160,7 @@
     pin.style.top  = (note.y*100)+'%';
     pin.textContent = i+1;
     
-    // 🔴 التغيير 2: استخدام innerHTML بدل title (ثغرة XSS)
+    // ثغرة XSS في الـ pins
     pin.innerHTML = `${note.name||'ضيف/ـة'}: ${note.text}`;
     return pin;
   }
@@ -136,11 +170,11 @@
     imageArea.querySelectorAll('.pin').forEach(p=>p.remove());
     list.forEach((n,i) => imageArea.appendChild(makePin(i,n)));
 
-    // 🔴 التغيير 3: استخدام innerHTML مباشر للتعليقات (ثغرة XSS رئيسية)
+    // Comments - ثغرة XSS رئيسية
     commentsEl.innerHTML = '';
     
     if(list.length === 0){
-      commentsEl.innerHTML = '<div class="hint">لا توجد مراجعات بعد — اضغط/ي على الصورة لإضافة أول مراجعة ✍️</div>';
+      commentsEl.innerHTML = '<div class="hint">لا توجد مراجعات بعد — اضغط/ي على المنطقة الزرقاء لإضافة أول مراجعة ✍️</div>';
       return;
     }
     
@@ -148,7 +182,7 @@
       const card = document.createElement('div'); 
       card.className = 'comment';
       
-      // 🔴 ثغرة XSS خطيرة - إدخال بيانات المستخدم مباشرة في innerHTML
+      // إدخال مباشر بدون أي حماية
       card.innerHTML = `
         <div class="badge">${i+1}</div>
         <div style="flex:1">
@@ -164,7 +198,7 @@
       commentsEl.appendChild(card);
     });
 
-    // 🔴 التغيير 4: تنفيذ أي سكريبت في التعليقات تلقائياً
+    // تنفيذ أي سكريبت في التعليقات
     setTimeout(() => {
       const scripts = commentsEl.getElementsByTagName('script');
       for (let script of scripts) {
@@ -175,9 +209,9 @@
     }, 100);
   }
 
-  // Click on image to open form
+  // Click on image area to open form
   imageArea.addEventListener('click', (e) => {
-    const rect = img.getBoundingClientRect();
+    const rect = imageArea.getBoundingClientRect();
     const x = (e.clientX - rect.left)/rect.width;
     const y = (e.clientY - rect.top)/rect.height;
     if(x<0||x>1||y<0||y>1) return;
@@ -186,7 +220,6 @@
     dialogEl.showModal();
   });
 
-  // 🔴 التغيير 5: حفظ محلي بدل الإرسال للسيرفر
   formEl.addEventListener('submit', async (e) => {
     e.preventDefault();
     const payload = {
@@ -199,7 +232,7 @@
     
     if(!payload.text){ alert('اكتب/ي المراجعة'); return; }
     
-    // حفظ محلي مباشر بدون أي حماية
+    // حفظ محلي
     const reviews = getReviews();
     reviews.push(payload);
     saveReviews(reviews);
@@ -218,3 +251,15 @@
 </script>
 </body>
 </html>
+   
+     
+    
+
+  
+
+   
+    
+
+   
+
+
