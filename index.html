@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>آراء الزوار عن الموقع</title>
+  <meta name="description" content="الزوار يضيفون مراجعات وتعليقات بنقاط على صورة واحدة. المالك فقط يغير الصورة.">
+  <style>
+    :root{
+      --bg:#0f172a; --card:#0b1220; --text:#e5e7eb; --muted:#9ca3af; --line:#1f2937;
+      --accent:#22d3ee; --danger:#ef4444; --ok:#10b981;
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:linear-gradient(180deg,#0b1220,#0f172a); color:var(--text); min-height:100dvh; }
+    header{ position:sticky; top:0; z-index:10; display:flex; gap:12px; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--line); background:#0b1220cc; backdrop-filter:blur(8px); }
+    header h1{ margin:0; font-size:18px }
+    .wrap{ width:min(1100px,100%); margin:0 auto; padding:18px 16px 40px; display:flex; flex-direction:column; gap:16px }
+    .board{ border:1px solid var(--line); background:var(--card); border-radius:20px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.35); }
+    .head{ padding:12px 14px; border-bottom:1px solid var(--line); color:var(--muted); font-size:14px; display:flex; justify-content:space-between; align-items:center; gap:10px }
+    .body{ padding:12px }
+    .image-area{ position:relative; background:#0a0f1a; border:1px dashed #334155; border-radius:14px; overflow:hidden; min-height:340px; display:flex; align-items:center; justify-content:center; user-select:none; touch-action:manipulation; }
+    .image-area img{ max-width:100%; max-height:70vh; object-fit:contain; display:block }
+    .pin{ position:absolute; transform:translate(-50%,-100%); width:24px; height:24px; border-radius:50%; background: radial-gradient(circle at 30% 30%, #22d3ee, #0891b2); border:2px solid #022c3a; color:#031c22; font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,.45); cursor:pointer; }
+    .hint{ color:var(--muted); font-size:13px; padding:10px; text-align:center }
+    .comments{ margin-top:14px; display:flex; flex-direction:column; gap:10px }
+    .comment{ border:1px solid var(--line); background:#0a0f1a; border-radius:14px; padding:12px; display:flex; align-items:flex-start; gap:10px }
+    .badge{ min-width:28px; min-height:28px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; background:#063a45; color:#9df5ff; border:1px solid #0c4a5a; font-weight:800; }
+    .meta{ color:var(--muted); font-size:12px }
+    .comment p{ margin:4px 0 0 0; line-height:1.5; white-space:pre-wrap }
+    .row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center }
+    .btn{ appearance:none; border:1px solid var(--line); background:#0b1220; color:var(--text); padding:10px 14px; border-radius:14px; cursor:pointer; font-weight:600; text-decoration:none; transition:.2s transform,.2s opacity,.2s border-color; }
+    .btn:hover{ transform:translateY(-1px); border-color:#334155 }
+    .btn:active{ transform:none; opacity:.9 }
+    .btn-primary{ border-color:transparent; background:linear-gradient(135deg,#06b6d4,#22d3ee); color:#06161c }
+    .small{ font-size:12px; color:var(--muted) }
+    dialog{ border:1px solid var(--line); background:#0b1220; color:var(--text); border-radius:16px; padding:14px; width:min(520px,96vw) }
+    dialog::backdrop{ background:rgba(0,0,0,.55) }
+    label{ font-size:13px; color:var(--muted) }
+    input, textarea, select{ width:100%; background:#0a0f1a; border:1px solid #334155; color:var(--text); border-radius:12px; padding:10px 12px; }
+    textarea{ min-height:110px; resize:vertical }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📌 آراء الزوار عن الموقع</h1>
+    <div class="small">🎯 المالك فقط يغيّر الصورة. الزوار يضيفون مراجعات بنقاط.</div>
+  </header>
+
+  <main class="wrap">
+    <section class="board">
+      <div class="head">
+        <span>اضغط/ي على موقع في الصورة لإضافة مراجعة</span>
+        <button id="reload" class="btn">تحديث القائمة</button>
+      </div>
+      <div class="body">
+        <div id="imageArea" class="image-area">
+          <!-- الصورة المملوكة: داخل المشروع -->
+          <img id="img" src="./coffee.webp" alt="صورة العرض">
+        </div>
+        <div class="comments" id="comments"></div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="formDialog">
+    <form id="reviewForm" method="dialog">
+      <h3 style="margin-top:0">إضافة مراجعة</h3>
+      <input type="hidden" id="fx" name="x">
+      <input type="hidden" id="fy" name="y">
+      <div style="display:flex; gap:8px;">
+        <div style="flex:1">
+          <label>اسمك (اختياري)</label>
+          <input id="fname" name="name" placeholder="ضيف/ـة">
+        </div>
+        <div style="width:140px">
+          <label>التقييم</label>
+          <select id="frating" name="rating">
+            <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+            <option value="4">⭐⭐⭐⭐ (4)</option>
+            <option value="3">⭐⭐⭐ (3)</option>
+            <option value="2">⭐⭐ (2)</option>
+            <option value="1">⭐ (1)</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <label>المراجعة</label>
+        <textarea id="ftext" name="text" placeholder="اكتب/ي رأيك أو تعليقك…"></textarea>
+      </div>
+      <div class="row" style="justify-content:flex-end; margin-top:10px">
+        <button class="btn" value="cancel">الغاء</button>
+        <button class="btn btn-primary" id="submitBtn" value="default">نشر</button>
+      </div>
+    </form>
+  </dialog>
+
+<script>
+(() => {
+  const img = document.getElementById('img');
+  const imageArea = document.getElementById('imageArea');
+  const commentsEl = document.getElementById('comments');
+  const dialogEl = document.getElementById('formDialog');
+  const formEl = document.getElementById('reviewForm');
+  const fx = document.getElementById('fx'); const fy = document.getElementById('fy');
+  const reloadBtn = document.getElementById('reload');
+
+  // 🔴 التغيير 1: استخدام localStorage بدل Netlify Functions
+  const STORAGE_KEY = 'vulnerable_reviews';
+  
+  function getReviews() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    } catch {
+      return [];
+    }
+  }
+  
+  function saveReviews(reviews) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews));
+  }
+
+  function makePin(i, note){
+    const pin = document.createElement('div');
+    pin.className = 'pin';
+    pin.style.left = (note.x*100)+'%';
+    pin.style.top  = (note.y*100)+'%';
+    pin.textContent = i+1;
+    
+    // 🔴 التغيير 2: استخدام innerHTML بدل title (ثغرة XSS)
+    pin.innerHTML = `${note.name||'ضيف/ـة'}: ${note.text}`;
+    return pin;
+  }
+
+  function render(list){
+    // Pins
+    imageArea.querySelectorAll('.pin').forEach(p=>p.remove());
+    list.forEach((n,i) => imageArea.appendChild(makePin(i,n)));
+
+    // 🔴 التغيير 3: استخدام innerHTML مباشر للتعليقات (ثغرة XSS رئيسية)
+    commentsEl.innerHTML = '';
+    
+    if(list.length === 0){
+      commentsEl.innerHTML = '<div class="hint">لا توجد مراجعات بعد — اضغط/ي على الصورة لإضافة أول مراجعة ✍️</div>';
+      return;
+    }
+    
+    list.forEach((n,i)=>{
+      const card = document.createElement('div'); 
+      card.className = 'comment';
+      
+      // 🔴 ثغرة XSS خطيرة - إدخال بيانات المستخدم مباشرة في innerHTML
+      card.innerHTML = `
+        <div class="badge">${i+1}</div>
+        <div style="flex:1">
+          <div class="meta">
+            ${n.name || 'ضيف/ـة'} • تقييم ${'⭐'.repeat(n.rating||5)} • 
+            ${new Date(n.at||Date.now()).toLocaleString('ar-SA')} • 
+            X ${(n.x*100).toFixed(1)}% Y ${(n.y*100).toFixed(1)}%
+          </div>
+          <div>${n.text}</div>
+        </div>
+      `;
+      
+      commentsEl.appendChild(card);
+    });
+
+    // 🔴 التغيير 4: تنفيذ أي سكريبت في التعليقات تلقائياً
+    setTimeout(() => {
+      const scripts = commentsEl.getElementsByTagName('script');
+      for (let script of scripts) {
+        try {
+          eval(script.innerHTML);
+        } catch(e) {}
+      }
+    }, 100);
+  }
+
+  // Click on image to open form
+  imageArea.addEventListener('click', (e) => {
+    const rect = img.getBoundingClientRect();
+    const x = (e.clientX - rect.left)/rect.width;
+    const y = (e.clientY - rect.top)/rect.height;
+    if(x<0||x>1||y<0||y>1) return;
+    fx.value = x.toFixed(6); fy.value = y.toFixed(6);
+    formEl.reset(); document.getElementById('frating').value = "5";
+    dialogEl.showModal();
+  });
+
+  // 🔴 التغيير 5: حفظ محلي بدل الإرسال للسيرفر
+  formEl.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const payload = {
+      x: +fx.value, y: +fy.value,
+      name: document.getElementById('fname').value.trim(),
+      rating: +document.getElementById('frating').value,
+      text: document.getElementById('ftext').value.trim(),
+      at: new Date().toISOString()
+    };
+    
+    if(!payload.text){ alert('اكتب/ي المراجعة'); return; }
+    
+    // حفظ محلي مباشر بدون أي حماية
+    const reviews = getReviews();
+    reviews.push(payload);
+    saveReviews(reviews);
+    
+    dialogEl.close();
+    render(reviews);
+  });
+
+  reloadBtn.addEventListener('click', () => {
+    render(getReviews());
+  });
+
+  // التحميل الأولي
+  render(getReviews());
+})();
+</script>
+</body>
+</html>
