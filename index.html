@@ -34,7 +34,7 @@
     .image-area img {
       max-width: 100%;
       max-height: 70vh;
-      object-fit: cover;
+      object-fit: contain;
       border-radius: 10px;
     }
     .hint{ color:var(--muted); font-size:13px; padding:10px; text-align:center }
@@ -70,6 +70,23 @@
     .reset-btn:hover {
       background: #dc2626;
     }
+
+    /* النقاط الحمراء على الصورة */
+    .review-point {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: #ef4444;
+      border: 3px solid white;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      z-index: 2;
+    }
+    .review-point:hover {
+      transform: translate(-50%, -50%) scale(1.2);
+    }
   </style>
 </head>
 <body>
@@ -91,8 +108,8 @@
       </div>
       <div class="body">
         <div id="imageArea" class="image-area">
-          <!-- الصورة -->
-          <img id="img" src="https://i.imgur.com/8nLfQY7.png" alt="Coffee Shop" style="width: 100%; height: auto;">
+          <!-- الصورة المحلية -->
+          <img id="img" src="coffee image.jpg" alt="Coffee Shop" style="width: 100%; height: auto;">
         </div>
         <div class="comments" id="comments"></div>
       </div>
@@ -157,9 +174,26 @@
   }
 
   function render(list){
-    // ❌ لا توجد نقاط حمراء على الصورة
+    // مسح النقاط القديمة أولاً
+    document.querySelectorAll('.review-point').forEach(point => point.remove());
     
-    // Comments فقط - ثغرة XSS رئيسية
+    // إضافة النقاط الحمراء على الصورة
+    list.forEach((review, index) => {
+      const point = document.createElement('div');
+      point.className = 'review-point';
+      point.style.left = `${review.x * 100}%`;
+      point.style.top = `${review.y * 100}%`;
+      point.title = `مراجعة ${index + 1}: ${review.text.substring(0, 30)}...`;
+      
+      point.addEventListener('click', (e) => {
+        e.stopPropagation();
+        alert(`المراجعة ${index + 1}:\n${review.text}\n\nالتقييم: ${'⭐'.repeat(review.rating)}`);
+      });
+      
+      imageArea.appendChild(point);
+    });
+    
+    // عرض التعليقات
     commentsEl.innerHTML = '';
     
     if(list.length === 0){
@@ -171,7 +205,6 @@
       const card = document.createElement('div'); 
       card.className = 'comment';
       
-      // إدخال مباشر بدون أي حماية
       card.innerHTML = `
         <div class="badge">${i+1}</div>
         <div style="flex:1">
@@ -185,16 +218,6 @@
       
       commentsEl.appendChild(card);
     });
-
-    // تنفيذ أي سكريبت في التعليقات
-    setTimeout(() => {
-      const scripts = commentsEl.getElementsByTagName('script');
-      for (let script of scripts) {
-        try {
-          eval(script.innerHTML);
-        } catch(e) {}
-      }
-    }, 100);
   }
 
   // Click on image to open form
@@ -239,3 +262,9 @@
 </script>
 </body>
 </html>
+     
+ 
+        
+  
+
+
