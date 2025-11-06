@@ -1,91 +1,4 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>آراء الزوار عن المقهى</title>
-  <meta name="description" content="الزوار يضيفون مراجعات وتعليقات بنقاط على صورة واحدة. المالك فقط يغير الصورة.">
-  <style>
-    :root{
-      --bg:#0f172a; --card:#0b1220; --text:#e5e7eb; --muted:#9ca3af; --line:#1f2937;
-      --accent:#22d3ee; --danger:#ef4444; --ok:#10b981;
-    }
-    *{box-sizing:border-box}
-    body{ margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:linear-gradient(180deg,#0b1220,#0f172a); color:var(--text); min-height:100dvh; }
-    header{ position:sticky; top:0; z-index:10; display:flex; gap:12px; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--line); background:#0b1220cc; backdrop-filter:blur(8px); }
-    header h1{ margin:0; font-size:18px }
-    .wrap{ width:min(1100px,100%); margin:0 auto; padding:18px 16px 40px; display:flex; flex-direction:column; gap:16px }
-    .board{ border:1px solid var(--line); background:var(--card); border-radius:20px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.35); }
-    .head{ padding:12px 14px; border-bottom:1px solid var(--line); color:var(--muted); font-size:14px; display:flex; justify-content:space-between; align-items:center; gap:10px }
-    .body{ padding:12px }
-    .image-area{ 
-      position:relative; 
-      background: #0a0f1a;
-      border: 2px dashed #334155;
-      border-radius:14px; 
-      overflow:hidden; 
-      min-height:400px; 
-      display:flex; 
-      align-items:center; 
-      justify-content:center; 
-      user-select:none; 
-      touch-action:manipulation;
-    }
-    .image-area img {
-      max-width: 100%;
-      max-height: 70vh;
-      object-fit: contain;
-      border-radius: 10px;
-    }
-    .hint{ color:var(--muted); font-size:13px; padding:10px; text-align:center }
-    .comments{ margin-top:14px; display:flex; flex-direction:column; gap:10px }
-    .comment{ border:1px solid var(--line); background:#0a0f1a; border-radius:14px; padding:12px; display:flex; align-items:flex-start; gap:10px }
-    .badge{ min-width:28px; min-height:28px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; background:#063a45; color:#9df5ff; border:1px solid #0c4a5a; font-weight:800; }
-    .meta{ color:var(--muted); font-size:12px }
-    .comment p{ margin:4px 0 0 0; line-height:1.5; white-space:pre-wrap }
-    .row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center }
-    .btn{ appearance:none; border:1px solid var(--line); background:#0b1220; color:var(--text); padding:10px 14px; border-radius:14px; cursor:pointer; font-weight:600; text-decoration:none; transition:.2s transform,.2s opacity,.2s border-color; }
-    .btn:hover{ transform:translateY(-1px); border-color:#334155 }
-    .btn:active{ transform:none; opacity:.9 }
-    .btn-primary{ border-color:transparent; background:linear-gradient(135deg,#06b6d4,#22d3ee); color:#06161c }
-    .small{ font-size:12px; color:var(--muted) }
-    dialog{ border:1px solid var(--line); background:#0b1220; color:var(--text); border-radius:16px; padding:14px; width:min(520px,96vw) }
-    dialog::backdrop{ background:rgba(0,0,0,.55) }
-    label{ font-size:13px; color:var(--muted) }
-    input, textarea, select{ width:100%; background:#0a0f1a; border:1px solid #334155; color:var(--text); border-radius:12px; padding:10px 12px; }
-    textarea{ min-height:110px; resize:vertical }
-    
-    /* زر الإصلاح */
-    .reset-btn {
-      background: #ef4444;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 14px;
-      margin: 10px auto;
-      display: block;
-    }
-    .reset-btn:hover {
-      background: #dc2626;
-    }
-
-    /* النقاط الحمراء على الصورة */
-    .review-point {
-      position: absolute;
-      width: 24px;
-      height: 24px;
-      background: #ef4444;
-      border: 3px solid white;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-      z-index: 2;
-    }
-    .review-point:hover {
-      transform: translate(-50%, -50%) scale(1.2);
+background: #dc2626;
     }
   </style>
 </head>
@@ -98,7 +11,7 @@
   <main class="wrap">
     <!-- زر الإصلاح -->
     <button class="reset-btn" onclick="if(confirm('هل تريد مسح كل التعليقات وإعادة الضبط؟')) { localStorage.removeItem('user_reviews'); location.reload(); }">
-      🗑️ مسح كل التعليقات وإعادة الضبط
+      🗑 مسح كل التعليقات وإعادة الضبط
     </button>
     
     <section class="board">
@@ -108,8 +21,8 @@
       </div>
       <div class="body">
         <div id="imageArea" class="image-area">
-          <!-- الصورة المحلية -->
-          <img id="img" src="coffee image.jpg" alt="Coffee Shop" style="width: 100%; height: auto;">
+          <!-- الصورة -->
+          <img id="img" src="coffee.webp" alt="Coffee Shop" style="width: 100%; height: auto;">
         </div>
         <div class="comments" id="comments"></div>
       </div>
@@ -129,11 +42,11 @@
         <div style="width:140px">
           <label>التقييم</label>
           <select id="frating" name="rating">
-            <option value="5">⭐⭐⭐⭐⭐ (5)</option>
-            <option value="4">⭐⭐⭐⭐ (4)</option>
-            <option value="3">⭐⭐⭐ (3)</option>
-            <option value="2">⭐⭐ (2)</option>
-            <option value="1">⭐ (1)</option>
+            <option value="5">⭐️⭐️⭐️⭐️⭐️ (5)</option>
+            <option value="4">⭐️⭐️⭐️⭐️ (4)</option>
+            <option value="3">⭐️⭐️⭐️ (3)</option>
+            <option value="2">⭐️⭐️ (2)</option>
+            <option value="1">⭐️ (1)</option>
           </select>
         </div>
       </div>
@@ -163,7 +76,7 @@
   
   function getReviews() {
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      return JSON.parse(localStorage.getItem(STORAGE_KEY))  [];
     } catch {
       return [];
     }
@@ -174,26 +87,9 @@
   }
 
   function render(list){
-    // مسح النقاط القديمة أولاً
-    document.querySelectorAll('.review-point').forEach(point => point.remove());
+    // ❌ لا توجد نقاط حمراء على الصورة
     
-    // إضافة النقاط الحمراء على الصورة
-    list.forEach((review, index) => {
-      const point = document.createElement('div');
-      point.className = 'review-point';
-      point.style.left = `${review.x * 100}%`;
-      point.style.top = `${review.y * 100}%`;
-      point.title = `مراجعة ${index + 1}: ${review.text.substring(0, 30)}...`;
-      
-      point.addEventListener('click', (e) => {
-        e.stopPropagation();
-        alert(`المراجعة ${index + 1}:\n${review.text}\n\nالتقييم: ${'⭐'.repeat(review.rating)}`);
-      });
-      
-      imageArea.appendChild(point);
-    });
-    
-    // عرض التعليقات
+    // Comments فقط - ثغرة XSS رئيسية
     commentsEl.innerHTML = '';
     
     if(list.length === 0){
@@ -205,11 +101,12 @@
       const card = document.createElement('div'); 
       card.className = 'comment';
       
+      // إدخال مباشر بدون أي حماية
       card.innerHTML = `
         <div class="badge">${i+1}</div>
         <div style="flex:1">
           <div class="meta">
-            ${n.name || 'ضيف/ـة'} • تقييم ${'⭐'.repeat(n.rating||5)} • 
+            ${n.name  'ضيف/ـة'} • تقييم ${'⭐️'.repeat(n.rating||5)} • 
             ${new Date(n.at||Date.now()).toLocaleString('ar-SA')}
           </div>
           <div>${n.text}</div>
@@ -218,8 +115,17 @@
       
       commentsEl.appendChild(card);
     });
-  }
 
+    // تنفيذ أي سكريبت في التعليقات
+    setTimeout(() => {
+      const scripts = commentsEl.getElementsByTagName('script');
+      for (let script of scripts) {
+        try {
+          eval(script.innerHTML);
+        } catch(e) {}
+      }
+    }, 100);
+  }
   // Click on image to open form
   imageArea.addEventListener('click', (e) => {
     const rect = img.getBoundingClientRect();
@@ -262,9 +168,3 @@
 </script>
 </body>
 </html>
-     
- 
-        
-  
-
-
